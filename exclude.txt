@@ -1,0 +1,134 @@
+COMPLETE
+END
+
+FILE "Processes.txt"
+	KEEP_LINES	4,-1
+	SORT
+
+	PRE_REGEX	"s/,[ \t]*\r\n[ \t]*/, /"
+	PRE_REGEX 20	"s/\([^ \t]*[ \t]*[0-9]* \)\(.*\), \([^\r\n]*\)/\1\2\r\n\1\3/"
+	REGEX		"s/^\(.{26}\)[ \t]*[0-9]*[ \t]*\([^ \t]*\)/\1\t\2/"
+
+	PARSE ALSO
+
+	PARSE KEEP_LINES 4,-1
+
+	PARSE PRE_REGEX		"s/,[ \t]*\r\n[ \t]*/, /"
+	PARSE PRE_REGEX	20	"s/\([^ \t]*[ \t]*[0-9]* \)\(.*\), \([^\r\n]*\)/\1\2\r\n\1\3/"
+	PARSE REGEX		"s/^\(.\{25\}\) \( \{4\}\)\([ ]\{0,4\}[^ ]\{0,4\}\)\([^\r\n]*\)/\3\2 \1 \4/"
+
+	PARSE SORT
+
+	INCLUDES "audiodg.exe"
+	INCLUDES "Balloon32.exe"
+	INCLUDES "CxUtilSvc.exe"
+	INCLUDES "dsNcService.exe"
+	INCLUDES "EpeFprTrainer.exe"
+	INCLUDES "EpePcMonitor.exe"
+	INCLUDES "HotkeyService.exe"
+	INCLUDES "MfeEpeHost.exe"
+	INCLUDES "SmartAudio3"
+	INCLUDES "SynTPEnh.exe"
+	INCLUDES "SynTPEnhService.exe"
+	INCLUDES "SynTPHelper.exe"
+	INCLUDES "UpdaterUI.exe"
+	INCLUDES "atieclxx.exe"
+	INCLUDES "atiesrxx.exe"
+	INCLUDES "hpqwmiex.exe"
+	INCLUDES "macmnsvc.exe"
+	INCLUDES "macompatsvc.exe"
+	INCLUDES "masvc.exe"
+	INCLUDES "mctray.exe"
+	INCLUDES "AudioEndpointBuilder"
+	INCLUDES "CscService"
+	INCLUDES "Netman"
+	INCLUDES "PcaSvc"
+	INCLUDES "TrkWks"
+	INCLUDES "UmRdpService"
+	INCLUDES "UxSms"
+	INCLUDES "Wlansvc"
+	INCLUDES "taskeng.exe"
+	INCLUDES "FJTWMKSV.exe"
+
+	# DISP_ORIG
+	# POST INCLUDES "audiodg.exe"
+END
+
+FILE "Services.txt"
+	SORT
+
+	PRE_REGEX"s/^SERVICE_NAME: \([^\r]*\)\r\nDISPLAY_NAME: \([^\r]*\)\r\n\(.*\r\n\){10}/\1\t\t\t\2\r\n/"
+	REGEX "s/^[ \t].*//"
+
+	INCLUDES "CxUtilSvc"
+	INCLUDES "HP Hotkey Service"
+	INCLUDES "McAfee Endpoint Encryption Agent"
+	INCLUDES "McAfeeFramework	"
+	INCLUDES "SynTPEnhService"
+	INCLUDES "hpqcaslwmiex"
+	INCLUDES "macmnsvc"
+
+END
+
+FILE "Routes.txt"
+
+	PARSE PRE_REGEX "s/\(.*\r\n\)*\(IPv4 Table de routage\r\n=*\r\n\([^=]*\r\n\)*=*\r\n\)\(.*\r\n\)*/\2/"
+	
+	PARSE ONLY
+END
+
+FILE "Network Connections.txt"
+	REGEX "s/^\(.{71}\)([^ \t]*)/\1/"
+
+	HIDE_MISSING
+	PARSE ALSO
+
+	INCLUDES "audiodg.exe"
+	INCLUDES "Balloon32.exe"
+	INCLUDES "CxUtilSvc.exe"
+	INCLUDES "dsNcService.exe"
+	INCLUDES "EpeFprTrainer.exe"
+	INCLUDES "EpePcMonitor.exe"
+	INCLUDES "HotkeyService.exe"
+	INCLUDES "MfeEpeHost.exe"
+	INCLUDES "SmartAudio3"
+	INCLUDES "SynTPEnh.exe"
+	INCLUDES "SynTPEnhService.exe"
+	INCLUDES "SynTPHelper.exe"
+	INCLUDES "UpdaterUI.exe"
+	INCLUDES "atieclxx.exe"
+	INCLUDES "atiesrxx.exe"
+	INCLUDES "hpqwmiex.exe"
+	INCLUDES "macmnsvc.exe"
+	INCLUDES "macompatsvc.exe"
+	INCLUDES "masvc.exe"
+	INCLUDES "mctray.exe"
+	INCLUDES "AudioEndpointBuilder"
+	INCLUDES "CscService"
+	INCLUDES "Netman"
+	INCLUDES "PcaSvc"
+	INCLUDES "TrkWks"
+	INCLUDES "UmRdpService"
+	INCLUDES "UxSms"
+	INCLUDES "Wlansvc"
+	INCLUDES "taskeng.exe"
+	INCLUDES "FJTWMKSV.exe"
+END
+
+# FILE "example.txt"
+#	SORT
+#
+#	HIDE_MISSING
+#	HIDE_ADDED
+#
+#	PARSE ONLY
+#	PARSE ALSO
+#
+#	KEEP_LINES	3,-6
+#
+#	PRE_REGEX	"s/^[aze]/aze/"
+#	REGEX		"s/^[aze]/aze/"
+#
+#	INCLUDES	"word"
+#	EQUALS		"line"
+# END

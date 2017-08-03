@@ -1,3 +1,5 @@
+/testdata/
+
 *.gem
 *.rbc
 /.config
