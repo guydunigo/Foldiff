@@ -6,7 +6,8 @@ Foldiff
 Usage
 -----
 
-    $ ruby compare.rb [--exclude=exclude.txt] [-s] [-q] reference dossiers_a_comparer
+    $ ruby compare.rb [--exclude=exclude.txt] [-s] [-q] reference folders_to_compare
+    
   **-s** skip empty files
   
   **-q** quiet doesn't print the output to the term
