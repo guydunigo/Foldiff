@@ -1,7 +1,7 @@
 Foldiff
 =======
 
-*Easily configurable tool to get the difference between a reference folder and others
+*Easily configurable tool to get the difference between a reference folder and others*
 
 Usage
 -----
