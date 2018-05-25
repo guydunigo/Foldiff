@@ -152,7 +152,7 @@ end
 def applyRegex(regex, src)
     tmp = src.clone
 
-    p regex
+    # p regex
     if src.is_a? Array
         regex[2].times do
             tmp.collect! do |x|
@@ -319,7 +319,7 @@ def extractRegexList(confArray, regexType, filename = "")
         list.each do |x|
             temp = x.match(/#{regexType}[^"]*"([^"]*)"/)
             temp = extractRegex(temp[1],"#{regexType}",filename) unless temp.nil?
-            temp2 = x.match(/.*[ \t]([0-9]*)[ \t].*/)
+            temp2 = x.match(/.*[ \t]([0-9]+)[ \t].*/)
             unless temp2.nil?
                 temp << temp2[1].to_i
             else
@@ -355,13 +355,13 @@ def extractRegex(regex, regexType = "", filename = "")
 end
 
 # def getHostName(foldername,filesArray)
-# 
+#
 #     fname = "System Info.txt"
 #     if filesArray.include? fname
 #         name = File.read(foldername + "/" + fname, mode:'rb').split("\r\n")[1]
 #         name.gsub!(/^.* {2,}([^ ]*)/,'\1')
 #     end
-# 
+#
 #     return name
 # end
 
@@ -447,7 +447,7 @@ for i in args
     oname = "compared_#{i.gsub "/","_"}.txt"
 
     if $output_file
-        puts print "Writing report for folder #{i} in : '#{oname}'..."
+        puts "Writing report for folder #{i} in : '#{oname}'..."
         of = File.open(oname, mode:"w")
         output.each do |x|
             of.write x
