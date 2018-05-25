@@ -7,15 +7,16 @@ Usage
 -----
 
 ```shell
-$ ruby compare.rb [--config=config.txt] [-s] [-q] [-f] reference folders_to_compare
+$ ruby compare.rb [--config=config.txt] [-s] [-q] [-f] [-e] reference folders_to_compare
 ```
 
 | Long form           | Short | Description                                         |
 | ------------------- |:-----:| --------------------------------------------------- |
 | --config=*filename* |       | file containing rules for comparison                |
-| --skip-empty        | -s    | skip empty files                                    |
 | --file-output       | -f    | writes reports to file named compare_FOLDERNAME.txt |
 | --quiet             | -q    | quiet doesn't print the output to the term (without --file-output, it doesn't really make any sense) |
+| --skip-empty        | -s    | skip empty files                                    |
+| --show-equals       | -e    | show the files also that don't differ               |
 
 
 Config file

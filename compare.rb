@@ -1,11 +1,11 @@
 #!/usr/bin/ruby
 #
-# Usage : ruby compare.rb [--config=config.txt] [-s] [-f] [-q] reference folders_to_compare
+# Usage : ruby compare.rb [--config=config.txt] [-s] [-f] [-q] [-e] reference folders_to_compare
 #  --config=filename        : file containing rules for comparison
-#  --skip-empty         -s  : skip empty files
 #  --file-output        -f  : writes reports to file named compare_FOLDERNAME.txt
 #  --quiet              -q  : quiet doesn't print the output to the term (without --file-output, it doesn't really make any sense)
-#
+#  --skip-empty         -s  : skip empty files
+#  --show-equals        -e  : show the files that are the same in both directories
 
 def listFiles(dirname,excludes = nil)
     temp = Dir[ File.join(dirname,'**','*')].reject { |p| File.directory? p }
@@ -402,6 +402,13 @@ if ($*.include? "--skip-empty") || ($*.include? "-s")
     $skip_empty = true
 end
 
+$display_same = false
+if ($*.include? "--show-equals") || ($*.include? "-e")
+    args.delete "--show-equals"
+    args.delete "-e"
+    $display_same = true
+end
+
 refName = $*[0]
 args.delete refName
 refFiles = listFiles(refName, conf.nil? ? nil : conf[:complete_files])
@@ -428,9 +435,12 @@ for i in args
 
     output.push printArray("Missing",missing)
 
-    output.push printArray("Not present in the reference",new)
+    output.push printArray("Not present in the reference", new)
 
-    output.push printArray("Different",filesdiff)
+    output.push printArray("Different", filesdiff)
+
+    # Not very clean, ...
+    output.push printArray("Equal", refFiles.reject{ |f| filesdiff.include?("-- " + f) || filesdiff.include?("vv " + f) }.sort) if $display_same
 
     output.push "#" * $SEP_LINES_SIZE + "\n\n"
 
