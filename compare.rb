@@ -1,9 +1,10 @@
 #!/usr/bin/ruby
 #
-# Usage : ruby compare.rb [--exclude=exclude.txt] [-s] [-q] reference dossiers_a_comparer
-#  -s : skip empty files
-#  -q : quiet doesn't print the output to the term
-#  --exclude=filename : file containing rules for comparison
+# Usage : ruby compare.rb [--config=config.txt] [-s] [-f] [-q] reference folders_to_compare
+#  --config=filename        : file containing rules for comparison
+#  --skip-empty         -s  : skip empty files
+#  --file-output        -f  : writes reports to file named compare_FOLDERNAME.txt
+#  --quiet              -q  : quiet doesn't print the output to the term (without --file-output, it doesn't really make any sense)
 #
 
 def listFiles(dirname,excludes = nil)
@@ -349,30 +350,31 @@ def extractRegex(regex, regexType = "", filename = "")
     return res
 end
 
-def getHostName(foldername,filesArray)
-
-    fname = "System Info.txt"
-    if filesArray.include? fname
-        name = File.read(foldername + "/" + fname, mode:'rb').split("\r\n")[1]
-        name.gsub!(/^.* {2,}([^ ]*)/,'\1')
-    end
-
-    return name
-end
+# def getHostName(foldername,filesArray)
+# 
+#     fname = "System Info.txt"
+#     if filesArray.include? fname
+#         name = File.read(foldername + "/" + fname, mode:'rb').split("\r\n")[1]
+#         name.gsub!(/^.* {2,}([^ ]*)/,'\1')
+#     end
+# 
+#     return name
+# end
 
 ################################################################################
 
+# Size of the separators lines :
 $SEP_LINES_SIZE = 120
 
 args = $*
 
 ex = nil
-unless ($*.grep /--exclude/).empty?
-    arg = ($*.grep /--exclude/)[0]
+unless ($*.grep /--config/).empty?
+    arg = ($*.grep /--config/)[0]
 
     args.delete arg
 
-    ex = loadConf(arg.gsub(/--exclude=/,''))
+    ex = loadConf(arg.gsub(/--config=/,''))
 end
 
 $quiet = false
@@ -380,6 +382,13 @@ if ($*.include? "--quiet") || ($*.include? "-q")
     args.delete "--quiet"
     args.delete "-q"
     $quiet = true
+end
+
+$output_file = false
+if ($*.include? "--file-output") || ($*.include? "-f")
+    args.delete "--file-output"
+    args.delete "-f"
+    $output_file = true
 end
 
 $skip_empty = false
@@ -400,20 +409,18 @@ print "Using '#{refName}' as reference...\n\n"
 for i in args
     compFiles = listFiles i #,ex[:complete_files]
 
-    hostname = getHostName i,compFiles
-
     output = []
 
     output.push "#" * $SEP_LINES_SIZE + "\n"
-    output.push " Folder : '" + i + "' | Hostname : " + hostname + "\n"
+    output.push " Folder : '#{i}'\n"
     output.push "#" * $SEP_LINES_SIZE + "\n"
-    output.push " --> Reference : '#{refName}' | Hostname : #{getHostName refName, refFiles} \n"
+    output.push " --> Reference : '#{refName}'\n"
     output.push "#" * $SEP_LINES_SIZE + "\n\n"
 
     # excluding twice but it doesn't matter...
     missing = filesExists(compFiles,refFiles, ex[:complete_files])
     new = filesExists(refFiles,compFiles, ex[:complete_files])
-    filesdiff = filesDiffs(refName,refFiles,i,compFiles,ex)
+    filesdiff = filesDiffs(refName, refFiles, i, compFiles, ex)
 
     output.push printArray("Missing",missing)
 
@@ -423,11 +430,14 @@ for i in args
 
     output.push "#" * $SEP_LINES_SIZE + "\n\n"
 
-    oname = "compare_" + hostname + ".txt"
-    puts print "Writing report for host #{hostname} in : '#{oname}'..."
-    of = File.open(oname,mode:"w")
-    output.each do |x|
-        of.write x
+    oname = "compared_#{i.gsub "/","_"}.txt"
+
+    if $output_file
+        puts print "Writing report for folder #{i} in : '#{oname}'..."
+        of = File.open(oname, mode:"w")
+        output.each do |x|
+            of.write x
+        end
     end
 
     puts unless $quiet
