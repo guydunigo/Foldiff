@@ -21,6 +21,12 @@ $ ruby compare.rb [--config=config.txt] [-s] [-q] [-f] reference folders_to_comp
 Config file
 ------------
 ```
+# COMPLETE is a list of file to exclude completely from the comparison
+COMPLETE
+    README.md
+    other_file_to_exclude
+END
+
 # By default, the file diff isn't showed, the report only informs that it differs from the reference.
 # Add a FILE tag to display it :
 FILE "ex.txt" END

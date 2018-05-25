@@ -1,5 +1,4 @@
 COMPLETE
-    "constellation/node.key"
 END
 
 FILE "Processes.txt"
