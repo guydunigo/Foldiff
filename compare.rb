@@ -67,7 +67,7 @@ def getDiff(foldername1, foldername2, filename, conf = nil)
 
     diff = [] if tmp1 != tmp2
 
-    unless diff.nil? || conf[:file_parts][filename].nil?
+    unless diff.nil? || conf.nil? || conf[:file_parts][filename].nil?
         file = conf[:file_parts][filename]
 
         parse = tmp2.clone
@@ -404,7 +404,7 @@ end
 
 refName = $*[0]
 args.delete refName
-refFiles = listFiles(refName,conf[:complete_files]) unless conf.nil?
+refFiles = listFiles(refName, conf.nil? ? nil : conf[:complete_files])
 
 ################################################################################
 
@@ -422,8 +422,8 @@ for i in args
     output.push "#" * $SEP_LINES_SIZE + "\n\n"
 
     # excluding twice but it doesn't matter...
-    missing = filesExists(compFiles,refFiles, conf[:complete_files])
-    new = filesExists(refFiles,compFiles, conf[:complete_files])
+    missing = filesExists(compFiles,refFiles, conf.nil? ? nil : conf[:complete_files])
+    new = filesExists(refFiles,compFiles, conf.nil? ? nil : conf[:complete_files])
     filesdiff = filesDiffs(refName, refFiles, i, compFiles, conf)
 
     output.push printArray("Missing",missing)
