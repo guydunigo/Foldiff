@@ -38,13 +38,13 @@ def filesExists(fileArray1, fileArray2, excludes = nil)
 end
 
 # Output files present in both but differents
-def filesDiffs(foldername1,fileArray1, foldername2, fileArray2, ex = nil)
+def filesDiffs(foldername1,fileArray1, foldername2, fileArray2, conf = nil)
     res = []
     temp = fileArray1 - filesExists(fileArray1,fileArray2) - filesExists(fileArray2,fileArray1)
-    temp -= ex[:complete_files] unless ex.nil?
+    temp -= conf[:complete_files] unless conf.nil?
     temp.sort!.uniq!
     temp.each do |x|
-        diff = getDiff(foldername1,foldername2,x,ex)
+        diff = getDiff(foldername1,foldername2,x,conf)
         unless diff.nil?
             if diff.empty?
                 res << "-- " + x
@@ -61,14 +61,14 @@ def filesDiffs(foldername1,fileArray1, foldername2, fileArray2, ex = nil)
     return res
 end
 
-def getDiff(foldername1, foldername2, filename, ex = nil)
+def getDiff(foldername1, foldername2, filename, conf = nil)
     tmp1 = File.read(foldername1 + "/" + filename, mode:'rb')
     tmp2 = File.read(foldername2 + "/" + filename, mode:'rb')
 
     diff = [] if tmp1 != tmp2
 
-    unless diff.nil? || ex[:file_parts][filename].nil?
-        file = ex[:file_parts][filename]
+    unless diff.nil? || conf[:file_parts][filename].nil?
+        file = conf[:file_parts][filename]
 
         parse = tmp2.clone
 
@@ -195,6 +195,10 @@ def printArray(name,array)
 end
 
 def loadConf(name)
+    unless File.exist? name
+        abort "The config file `#{name}` doesn't exist."
+    end
+
     fileParts = File.read(name,mode:"rb").gsub(/\r/,'').split("END")
 
     conf = {
@@ -368,13 +372,13 @@ $SEP_LINES_SIZE = 120
 
 args = $*
 
-ex = nil
+conf = nil
 unless ($*.grep /--config/).empty?
     arg = ($*.grep /--config/)[0]
 
     args.delete arg
 
-    ex = loadConf(arg.gsub(/--config=/,''))
+    conf = loadConf(arg.gsub(/--config=/,''))
 end
 
 $quiet = false
@@ -400,14 +404,14 @@ end
 
 refName = $*[0]
 args.delete refName
-refFiles = listFiles(refName,ex[:complete_files]) unless ex.nil?
+refFiles = listFiles(refName,conf[:complete_files]) unless conf.nil?
 
 ################################################################################
 
 print "Using '#{refName}' as reference...\n\n"
 
 for i in args
-    compFiles = listFiles i #,ex[:complete_files]
+    compFiles = listFiles i #,conf[:complete_files]
 
     output = []
 
@@ -418,9 +422,9 @@ for i in args
     output.push "#" * $SEP_LINES_SIZE + "\n\n"
 
     # excluding twice but it doesn't matter...
-    missing = filesExists(compFiles,refFiles, ex[:complete_files])
-    new = filesExists(refFiles,compFiles, ex[:complete_files])
-    filesdiff = filesDiffs(refName, refFiles, i, compFiles, ex)
+    missing = filesExists(compFiles,refFiles, conf[:complete_files])
+    new = filesExists(refFiles,compFiles, conf[:complete_files])
+    filesdiff = filesDiffs(refName, refFiles, i, compFiles, conf)
 
     output.push printArray("Missing",missing)
 
